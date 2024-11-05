@@ -7,6 +7,9 @@ namespace MonoPatcher
 {
     public static class ReflectionUtility
     {
+        /// <summary>
+        /// Retrieves a method from a Type.
+        /// </summary>
         public static MethodInfo GetMethod(string methodName, Type type)
         {
             var methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);

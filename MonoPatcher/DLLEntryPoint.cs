@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MonoPatcher
+{
+    /// <summary>
+	/// Entry Point called from a DLL Hook, as early as possible so that more methods can be patched.
+	/// </summary>
+    internal class DLLEntryPoint
+    {
+        public DLLEntryPoint()
+        {
+            if (MonoPatcher.InitializationType != MonoPatcher.InitializationTypes.None) return;
+            MonoPatcher.Initialize(MonoPatcher.InitializationTypes.Early);
+        }
+    }
+}

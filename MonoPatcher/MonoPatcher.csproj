@@ -44,8 +44,10 @@
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DLLEntryPoint.cs" />
+    <Compile Include="MonoPatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="XMLEntryPoint.cs" />
     <Compile Include="ReflectionUtility.cs" />
   </ItemGroup>
   <ItemGroup>

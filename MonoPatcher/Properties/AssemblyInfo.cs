@@ -11,6 +11,5 @@ using Sims3.SimIFace;
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: Tunable]
 [assembly: ComVisible(false)]
 [assembly: AssemblyVersion("1.0.0")]
