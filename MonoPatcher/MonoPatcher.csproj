@@ -43,10 +43,22 @@
     <DefineConstants>TRACE</DefineConstants>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ReplaceMethodAttribute.cs" />
+    <Compile Include="TypePatchAttribute.cs" />
     <Compile Include="DLLEntryPoint.cs" />
+    <Compile Include="LoadedPlugin.cs" />
     <Compile Include="MonoPatcher.cs" />
+    <Compile Include="PluginAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Version.cs" />
     <Compile Include="XMLEntryPoint.cs" />
     <Compile Include="ReflectionUtility.cs" />
   </ItemGroup>

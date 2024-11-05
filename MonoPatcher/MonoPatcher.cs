@@ -1,5 +1,10 @@
-﻿using System;
+﻿using Sims3.SimIFace;
+using Sims3.UI;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace MonoPatcher
@@ -23,14 +28,108 @@ namespace MonoPatcher
         }
 
         /// <summary>
+        /// Current MonoPatcher version.
+        /// </summary>
+        public static Version Version = new Version(Constants.Version);
+
+        /// <summary>
         /// How was MonoPatcher initialized.
         /// </summary>
         public static InitializationTypes InitializationType = InitializationTypes.None;
+
+        /// <summary>
+        /// All plugins loaded by MonoPatcher.
+        /// </summary>
+        public static List<LoadedPlugin> Plugins = new List<LoadedPlugin>();
 
         public static void Initialize(InitializationTypes initType)
         {
             InitializationType = initType;
             if (initType == InitializationTypes.None) return;
+            World.sOnStartupAppEventHandler += OnStartupApp;
+        }
+
+        public static void PatchAll()
+        {
+            var method = new StackTrace().GetFrame(1).GetMethod();
+            var assembly = method.ReflectedType.Assembly;
+            PatchAll(assembly);
+        }
+
+        public static void PatchAll(Assembly assembly)
+        {
+            var types = assembly.GetTypes();
+            foreach(var type in types)
+            {
+                var typePatches = type.GetCustomAttributes(typeof(TypePatchAttribute), false);
+                foreach(var typePatch in typePatches)
+                {
+                    (typePatch as TypePatchAttribute).Apply(type);
+                }
+                var methods = type.GetMethods(ReflectionUtility.DefaultBindingFlags);
+                foreach(var method in methods)
+                {
+                    var methodPatches = method.GetCustomAttributes(typeof(ReplaceMethodAttribute), false);
+                    foreach(var methodPatch in methodPatches)
+                    {
+                        (methodPatch as ReplaceMethodAttribute).Apply(method);
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Fully replaces a method with a new one. Make sure the parameters and return values match.
+        /// </summary>
+        public static void ReplaceMethod(MethodInfo originalMethod, MethodInfo replacementMethod)
+        {
+            unsafe
+            {
+                var originalMethodHandle = originalMethod.MethodHandle.Value;
+                var replacementMethodHandle = replacementMethod.MethodHandle.Value;
+                var replacementByteArray = new byte[40];
+                Marshal.Copy(replacementMethodHandle, replacementByteArray, 0, 40);
+                Marshal.Copy(replacementByteArray, 0, originalMethodHandle, 24);
+                Marshal.Copy(replacementByteArray, 28, new IntPtr((int*)originalMethodHandle.ToPointer() + 28), 12);
+            }
+        }
+
+        private static void OnStartupApp(object sender, EventArgs e)
+        {
+            RegisterCommands();
+        }
+
+        private static void LoadPlugins()
+        {
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            // First register plugins then load, in case other mods want to check for compatibility and such.
+            foreach(var assembly in assemblies)
+            {
+                var types = assembly.GetTypes();
+                foreach(var type in types)
+                {
+                    if (type.GetCustomAttributes(typeof(PluginAttribute), false).Length > 0)
+                    {
+                        var plugin = new LoadedPlugin(type);
+                        Plugins.Add(plugin);
+                    }
+                }
+            }
+
+            foreach(var plugin in Plugins)
+            {
+                plugin.Initialize();
+            }
+        }
+
+        private static void RegisterCommands()
+        {
+            CommandSystem.RegisterCommand("monopatcher", "Shows info about MonoPatcher", (object[] args) =>
+            {
+                SimpleMessageDialog.Show("MonoPatcher", $"Version: {Version}\nInitialization Type: {InitializationType}");
+                return 1;
+            });
         }
     }
 }
