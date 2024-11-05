@@ -2,7 +2,7 @@ using System;
 using Sims3.Gameplay.Utilities;
 using Sims3.SimIFace;
 
-namespace MonoPatcher
+namespace MonoPatcherLib
 {
 	/// <summary>
 	/// Entry Point called from GameplayInitializers.XML in case of no DLL Hook.

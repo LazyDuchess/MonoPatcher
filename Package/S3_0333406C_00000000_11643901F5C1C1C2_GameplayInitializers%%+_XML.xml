@@ -14,7 +14,7 @@ editingame:     [optional] This attribute validates the initializer in Edit-in g
 -->
 
 <GameplayInitializers>
-	<Action type="MonoPatcher.XMLEntryPoint,MonoPatcher" init="Init" />
+	<Action type="MonoPatcherLib.XMLEntryPoint,MonoPatcher" init="Init" />
     <Action type="Sims3.Gameplay.Core.AudioManager,Sims3GameplaySystems" init="Init" shutdown="Shutdown"/>
     <Action type="Sims3.Gameplay.Core.ThumbnailHelper,Sims3GameplaySystems" init="InitGlobalHooks"/>
     <Action type="Sims3.SimIFace.GameUtils,SimIFace" init="StartupYield" />

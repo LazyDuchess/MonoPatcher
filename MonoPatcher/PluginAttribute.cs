@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonoPatcher
+namespace MonoPatcherLib
 {
     /// <summary>
     /// Automatically constructs this class on MonoPatcher initialization.

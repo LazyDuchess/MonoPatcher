@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonoPatcher
+namespace MonoPatcherLib
 {
     public class Version
     {

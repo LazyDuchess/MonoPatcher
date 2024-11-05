@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 
-namespace MonoPatcher
+namespace MonoPatcherLib
 {
     /// <summary>
     /// Overrides matching methods in the target Type.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace MonoPatcher
+namespace MonoPatcherLib
 {
     public static class ReflectionUtility
     {

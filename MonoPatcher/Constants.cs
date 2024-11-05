@@ -1,4 +1,4 @@
-﻿namespace MonoPatcher
+﻿namespace MonoPatcherLib
 {
     internal class Constants
     {

@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace MonoPatcher
+namespace MonoPatcherLib
 {
     public static class MonoPatcher
     {

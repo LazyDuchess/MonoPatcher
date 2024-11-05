@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonoPatcher
+namespace MonoPatcherLib
 {
     /// <summary>
 	/// Entry Point called from a DLL Hook, as early as possible so that more methods can be patched.
