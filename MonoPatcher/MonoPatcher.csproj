@@ -51,6 +51,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ReplaceMethodAttribute.cs" />
+    <Compile Include="ReplacePropertyAttribute.cs" />
     <Compile Include="TypePatchAttribute.cs" />
     <Compile Include="DLLEntryPoint.cs" />
     <Compile Include="LoadedPlugin.cs" />

@@ -23,5 +23,19 @@ namespace MonoPatcherLib
             return null;
         }
 
+        /// <summary>
+        /// Retrieves a property from a Type.
+        /// </summary>
+        public static PropertyInfo GetProperty(string propName, Type type)
+        {
+            var props = type.GetProperties(DefaultBindingFlags);
+            foreach (var prop in props)
+            {
+                if (prop.Name == propName)
+                    return prop;
+            }
+            return null;
+        }
+
     }
 }

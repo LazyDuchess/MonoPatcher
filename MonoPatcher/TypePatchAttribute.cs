@@ -30,6 +30,26 @@ namespace MonoPatcherLib
                 if (equivalent != null)
                     MonoPatcher.ReplaceMethod(equivalent, method);
             }
+
+            var replacementProps = replacementType.GetProperties(ReflectionUtility.DefaultBindingFlags);
+            var originalProps = Type.GetProperties(ReflectionUtility.DefaultBindingFlags);
+
+            foreach(var prop in replacementProps)
+            {
+                var equivalent = FindEquivalentProperty(prop, originalProps);
+                if (equivalent != null)
+                    MonoPatcher.ReplaceProperty(equivalent, prop);
+            }
+        }
+
+        private PropertyInfo FindEquivalentProperty(PropertyInfo prop, PropertyInfo[] inProps)
+        {
+            foreach (var propB in inProps)
+            {
+                if (propB.Name == prop.Name)
+                    return prop;
+            }
+            return null;
         }
 
         private MethodInfo FindEquivalentMethod(MethodInfo method, MethodInfo[] inMethods)

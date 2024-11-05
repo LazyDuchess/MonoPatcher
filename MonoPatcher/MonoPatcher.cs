@@ -75,6 +75,15 @@ namespace MonoPatcherLib
                         (methodPatch as ReplaceMethodAttribute).Apply(method);
                     }
                 }
+                var props = type.GetProperties(ReflectionUtility.DefaultBindingFlags);
+                foreach(var prop in props)
+                {
+                    var propPatches = prop.GetCustomAttributes(typeof(ReplacePropertyAttribute), false);
+                    foreach(var propPatch in propPatches)
+                    {
+                        (propPatch as ReplacePropertyAttribute).Apply(prop);
+                    }
+                }
             }
         }
         
@@ -92,6 +101,21 @@ namespace MonoPatcherLib
                 Marshal.Copy(replacementByteArray, 0, originalMethodHandle, 24);
                 Marshal.Copy(replacementByteArray, 28, new IntPtr((int*)originalMethodHandle.ToPointer() + 28), 12);
             }
+        }
+
+        public static void ReplaceProperty(PropertyInfo originalProp, PropertyInfo replacementProp)
+        {
+            var originalGetter = originalProp.GetGetMethod();
+            var originalSetter = originalProp.GetSetMethod();
+
+            var replacementGetter = replacementProp.GetGetMethod();
+            var replacementSetter = replacementProp.GetSetMethod();
+
+            if (replacementGetter != null && originalGetter != null)
+                ReplaceMethod(originalGetter, replacementGetter);
+
+            if (replacementSetter != null && originalSetter != null)
+                ReplaceMethod(originalSetter, replacementSetter);
         }
 
         private static void OnStartupApp(object sender, EventArgs e)
