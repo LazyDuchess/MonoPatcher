@@ -13,10 +13,17 @@ namespace MonoPatcherLib
     {
         public Type Type;
         public MethodInfo MethodToReplace;
+
         public ReplaceMethodAttribute(Type type, string method)
         {
             Type = type;
             MethodToReplace = ReflectionUtility.GetMethod(method, type);
+        }
+
+        public ReplaceMethodAttribute(Type type, string method, Type[] argTypes)
+        {
+            Type = type;
+            MethodToReplace = ReflectionUtility.GetMethod(method, type, argTypes);
         }
 
         public ReplaceMethodAttribute(Type type, MethodInfo method)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
 
 namespace MonoPatcherLib
@@ -56,7 +55,7 @@ namespace MonoPatcherLib
         {
             foreach(var methodB in inMethods)
             {
-                if (methodB.Name == method.Name)
+                if (methodB.Name == method.Name && Utility.ArraysMatch(ReflectionUtility.GetParameterTypes(method), ReflectionUtility.GetParameterTypes(methodB)))
                     return methodB;
             }
             return null;

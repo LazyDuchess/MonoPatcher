@@ -47,6 +47,7 @@ namespace MonoPatcherLib
             InitializationType = initType;
             if (initType == InitializationTypes.None) return;
             World.sOnStartupAppEventHandler += OnStartupApp;
+            LoadPlugins();
         }
 
         public static void PatchAll()
