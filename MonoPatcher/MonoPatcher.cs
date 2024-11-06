@@ -70,21 +70,27 @@ namespace MonoPatcherLib
             var types = assembly.GetTypes();
             foreach(var type in types)
             {
-                var patchItems = new List<object>();
                 var typePatches = type.GetCustomAttributes(typeof(TypePatchAttribute), false);
-                var methods = type.GetMethods(ReflectionUtility.DefaultBindingFlags);
-                var props = type.GetProperties(ReflectionUtility.DefaultBindingFlags);
-
-                patchItems.Add(type);
-                patchItems.AddRange(methods);
-                patchItems.AddRange(props);
-
-                foreach(var item in patchItems)
+                foreach(var typePatch in typePatches)
                 {
-                    var patchAttrs = item.GetType().GetCustomAttributes(typeof(PatchAttribute), false);
-                    foreach(var patchAttr in patchAttrs)
+                    (typePatch as TypePatchAttribute).Apply(type);
+                }
+                var methods = type.GetMethods(ReflectionUtility.DefaultBindingFlags);
+                foreach(var method in methods)
+                {
+                    var methodPatches = method.GetCustomAttributes(typeof(ReplaceMethodAttribute), false);
+                    foreach(var methodPatch in methodPatches)
                     {
-                        (patchAttr as PatchAttribute).Apply(item);
+                        (methodPatch as ReplaceMethodAttribute).Apply(method);
+                    }
+                }
+                var props = type.GetProperties(ReflectionUtility.DefaultBindingFlags);
+                foreach(var prop in props)
+                {
+                    var propPatches = prop.GetCustomAttributes(typeof(ReplacePropertyAttribute), false);
+                    foreach(var propPatch in propPatches)
+                    {
+                        (propPatch as ReplacePropertyAttribute).Apply(prop);
                     }
                 }
             }

@@ -9,7 +9,7 @@ namespace MonoPatcherLib
     /// Overrides matching methods in the target Type.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = false)]
-    public class TypePatchAttribute : PatchAttribute
+    public class TypePatchAttribute : Attribute
     {
         public Type Type;
 
@@ -18,16 +18,13 @@ namespace MonoPatcherLib
             Type = typeToPatch;
         }
 
-        public override void Apply(object replacement)
+        public void Apply(Type replacementType)
         {
-            Type replacementType = replacement as Type;
             var replacementMethods = replacementType.GetMethods(ReflectionUtility.DefaultBindingFlags);
             var originalMethods = Type.GetMethods(ReflectionUtility.DefaultBindingFlags);
 
             foreach(var method in replacementMethods)
             {
-                // Don't duplicate patches.
-                if (method.GetCustomAttributes(typeof(PatchAttribute), false).Length > 0) continue;
                 if (method.DeclaringType != replacementType) continue;
                 var equivalent = Utility.FindEquivalentMethod(method, originalMethods);
                 if (equivalent != null)
@@ -39,8 +36,6 @@ namespace MonoPatcherLib
 
             foreach(var prop in replacementProps)
             {
-                // Don't duplicate patches.
-                if (prop.GetCustomAttributes(typeof(PatchAttribute), false).Length > 0) continue;
                 if (prop.DeclaringType != replacementType) continue;
                 var equivalent = Utility.FindEquivalentProperty(prop, originalProps);
                 if (equivalent != null)
