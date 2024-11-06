@@ -4,16 +4,16 @@
 #include "MinHook.h"
 #include "Sims3/ScriptHost.h"
 
-typedef int(__thiscall *CREATEMONOSERVICE)(void* me, char* nspace, char* classname);
+typedef int(__thiscall *INITIALIZESCRIPTHOST)(void* me);
 
-CREATEMONOSERVICE fpCreateMonoService = NULL;
+INITIALIZESCRIPTHOST fpInitializeScriptHost = NULL;
 
 // thiscall hooking hack
-int __fastcall DetourCreateMonoService(void* me, void* dead, char* nspace, char* classname) {
-	printf("Creating Mono Service %s, namespace: %s\n", classname, nspace);
-	//MH_DisableHook((void*)0x00411200);
-	//ScriptHost::GetInstance()->CreateMonoService("MonoPatcherLib", "DLLEntryPoint");
-	return fpCreateMonoService(me, nspace, classname);
+int __fastcall DetourInitializeScriptHost(void* me, void* _) {
+	printf("Initializing ScriptHost");
+	int result = fpInitializeScriptHost(me);
+	ScriptHost::GetInstance()->CreateMonoClass("MonoPatcherLib", "DLLEntryPoint");
+	return result;
 }
 
 Core* Core::_instance = nullptr;
@@ -33,13 +33,13 @@ bool Core::Initialize() {
 	if (MH_Initialize() != MH_OK)
 		return false;
 
-	if (MH_CreateHook((void*)0x00411200, &DetourCreateMonoService,
-		reinterpret_cast<LPVOID*>(&fpCreateMonoService)) != MH_OK)
+	if (MH_CreateHook((void*)0x00411be0, &DetourInitializeScriptHost,
+		reinterpret_cast<LPVOID*>(&fpInitializeScriptHost)) != MH_OK)
 	{
 		return false;
 	}
 
-	if (MH_EnableHook((void*)0x00411200) != MH_OK)
+	if (MH_EnableHook((void*)0x00411be0) != MH_OK)
 	{
 		return false;
 	}

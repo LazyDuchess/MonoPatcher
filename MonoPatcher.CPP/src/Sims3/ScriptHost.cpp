@@ -5,6 +5,6 @@ ScriptHost* ScriptHost::GetInstance() {
 	return *(ScriptHost**)0x01209494;
 }
 
-int ScriptHost::CreateMonoService(char* nspace, char* classname) {
-	return ((int(__thiscall*)(ScriptHost*, char*, char*))0x00411200)(this, nspace, classname);
+void* ScriptHost::CreateMonoClass(char* nspace, char* classname) {
+	return ((void*(__thiscall*)(ScriptHost*, char*, char*))0x00411200)(this, nspace, classname);
 }
