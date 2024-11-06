@@ -43,4 +43,5 @@ bool Core::Initialize() {
 	{
 		return false;
 	}
+	return true;
 }
