@@ -119,17 +119,36 @@ namespace MonoPatcherLib
 
         public static void ReplaceProperty(PropertyInfo originalProp, PropertyInfo replacementProp)
         {
-            var originalGetter = originalProp.GetGetMethod();
-            var originalSetter = originalProp.GetSetMethod();
+            var originalAccessors = originalProp.GetAccessors(true);
+            var replacementAccessors = replacementProp.GetAccessors(true);
 
-            var replacementGetter = replacementProp.GetGetMethod();
-            var replacementSetter = replacementProp.GetSetMethod();
+            MethodInfo originalGetter = null;
+            MethodInfo originalSetter = null;
 
-            if (replacementGetter != null && originalGetter != null)
-                ReplaceMethod(originalGetter, replacementGetter);
+            MethodInfo replacementGetter = null;
+            MethodInfo replacementSetter = null;
 
-            if (replacementSetter != null && originalSetter != null)
+            foreach(var accessor in originalAccessors)
+            {
+                if (accessor.ReturnType == typeof(void))
+                    originalSetter = accessor;
+                else
+                    originalGetter = accessor;
+            }
+
+            foreach(var accessor in replacementAccessors)
+            {
+                if (accessor.ReturnType == typeof(void))
+                    replacementSetter = accessor;
+                else
+                    replacementGetter = accessor;
+            }
+
+            if (originalSetter != null && replacementSetter != null)
                 ReplaceMethod(originalSetter, replacementSetter);
+
+            if (originalGetter != null && replacementGetter != null)
+                ReplaceMethod(originalGetter, replacementGetter);
         }
 
         private static void OnStartupApp(object sender, EventArgs e)

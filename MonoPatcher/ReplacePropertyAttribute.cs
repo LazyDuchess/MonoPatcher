@@ -6,7 +6,7 @@ using System.Text;
 namespace MonoPatcherLib
 {
     /// <summary>
-    /// Overrides a property with this.
+    /// Overrides a property with this one.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = false)]
     public class ReplacePropertyAttribute : Attribute
