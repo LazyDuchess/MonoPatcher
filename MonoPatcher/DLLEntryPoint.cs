@@ -11,7 +11,6 @@ namespace MonoPatcherLib
     {
         public DLLEntryPoint()
         {
-            AppDomain.CurrentDomain.SetData("DLLEntryPoint", this);
             if (MonoPatcher.InitializationType != MonoPatcher.InitializationTypes.None) return;
             MonoPatcher.Initialize(MonoPatcher.InitializationTypes.CPP);
         }
