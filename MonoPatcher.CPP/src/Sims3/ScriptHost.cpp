@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ScriptHost.h"
+#include "Sims3/ScriptHost.h"
 
 ScriptHost* ScriptHost::GetInstance() {
 	return *(ScriptHost**)0x01209494;

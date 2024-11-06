@@ -2,10 +2,9 @@
 
 class Core {
 public:
-	Core();
-	static void Create();
+	bool Initialize();
+	static bool Create();
 	static Core* GetInstance();
-
 private:
 	static Core* _instance;
 };
