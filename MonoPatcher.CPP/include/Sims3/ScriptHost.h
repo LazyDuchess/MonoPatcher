@@ -3,5 +3,5 @@
 class ScriptHost {
 public:
 	static ScriptHost* GetInstance();
-	void CreateMonoService(char* nspace, char* classname);
+	int CreateMonoService(char* classname, char* nspace);
 };

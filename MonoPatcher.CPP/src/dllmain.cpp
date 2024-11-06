@@ -16,7 +16,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             printf("Failed to initialize Mono Patcher CPP Core!\n");
             FreeLibraryAndExitThread(hModule, 0);
         }
-        printf("Mono Patcher CPP Core initialized.");
+        printf("Mono Patcher CPP Core initialized.\n");
         break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
