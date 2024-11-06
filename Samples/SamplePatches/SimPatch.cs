@@ -5,7 +5,7 @@ using MonoPatcherLib;
 using Sims3.Gameplay.Actors;
 using Sims3.Gameplay.Controllers;
 
-namespace ClassPatch
+namespace SamplePatches
 {
     // TypePatch means all properties and methods that match those that can be found in the original class will be overriden.
     [TypePatch(typeof(Sim))]
@@ -14,7 +14,9 @@ namespace ClassPatch
         // Display first name only as tooltip.
         public string ToTooltipString()
         {
+            // This is how you retrieve the object instance in replacement methods.
             var sim = (Sim)(this as object);
+
             if (sim == null || sim.SimDescription == null)
                 return string.Empty;
             return sim.SimDescription.FirstName;

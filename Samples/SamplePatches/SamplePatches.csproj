@@ -7,8 +7,8 @@
     <ProjectGuid>{C612F0E4-D9CC-4A1C-ACB1-75F893DCE593}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ClassPatch</RootNamespace>
-    <AssemblyName>ClassPatch</AssemblyName>
+    <RootNamespace>SamplePatches</RootNamespace>
+    <AssemblyName>SamplePatches</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
