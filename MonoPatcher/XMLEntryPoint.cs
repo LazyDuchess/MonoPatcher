@@ -12,7 +12,7 @@ namespace MonoPatcherLib
 		public static void Init()
 		{
             if (MonoPatcher.InitializationType != MonoPatcher.InitializationTypes.None) return;
-            MonoPatcher.Initialize(MonoPatcher.InitializationTypes.Late);
+            MonoPatcher.Initialize(MonoPatcher.InitializationTypes.XML);
         }
 	}
 }

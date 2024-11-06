@@ -23,11 +23,11 @@ namespace MonoPatcherLib
             /// <summary>
             /// MonoPatcher was initialized as early as possible via a DLL Hook.
             /// </summary>
-            Early,
+            CPP,
             /// <summary>
             /// MonoPatcher was initialized late via XML.
             /// </summary>
-            Late
+            XML
         }
 
         /// <summary>
