@@ -10,7 +10,7 @@ include(FetchContent)
 FetchContent_Declare(
   MinHook
   GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
-  GIT_TAG        master  # You can change this to a specific tag or commit
+  GIT_TAG        master
 )
 
 FetchContent_MakeAvailable(MinHook)
@@ -27,7 +27,7 @@ target_link_libraries(MonoPatcher PRIVATE minhook)
 set_target_properties(MonoPatcher PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    SUFFIX ".asi"  # Change the extension from .dll to .asi
+    SUFFIX ".asi"
 )
 
 target_compile_definitions(MonoPatcher PRIVATE MONO_PATCHER_EXPORTS)
