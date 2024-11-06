@@ -25,6 +25,9 @@ namespace MonoPatcherLib
 
             foreach(var method in replacementMethods)
             {
+                // Let these override us
+                var attrs = method.GetCustomAttributes(typeof(ReplaceMethodAttribute), false);
+                if (attrs.Length > 0) continue;
                 if (method.DeclaringType != replacementType) continue;
                 var equivalent = Utility.FindEquivalentMethod(method, originalMethods);
                 if (equivalent != null)
@@ -36,6 +39,9 @@ namespace MonoPatcherLib
 
             foreach(var prop in replacementProps)
             {
+                // Let these override us
+                var attrs = prop.GetCustomAttributes(typeof(ReplacePropertyAttribute), false);
+                if (attrs.Length > 0) continue;
                 if (prop.DeclaringType != replacementType) continue;
                 var equivalent = Utility.FindEquivalentProperty(prop, originalProps);
                 if (equivalent != null)
