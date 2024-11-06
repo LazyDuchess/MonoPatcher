@@ -25,7 +25,8 @@ namespace MonoPatcherLib
 
             foreach(var method in replacementMethods)
             {
-                var equivalent = FindEquivalentMethod(method, originalMethods);
+                if (method.DeclaringType != replacementType) continue;
+                var equivalent = Utility.FindEquivalentMethod(method, originalMethods);
                 if (equivalent != null)
                     MonoPatcher.ReplaceMethod(equivalent, method);
             }
@@ -35,30 +36,11 @@ namespace MonoPatcherLib
 
             foreach(var prop in replacementProps)
             {
-                var equivalent = FindEquivalentProperty(prop, originalProps);
+                if (prop.DeclaringType != replacementType) continue;
+                var equivalent = Utility.FindEquivalentProperty(prop, originalProps);
                 if (equivalent != null)
                     MonoPatcher.ReplaceProperty(equivalent, prop);
             }
-        }
-
-        private PropertyInfo FindEquivalentProperty(PropertyInfo prop, PropertyInfo[] inProps)
-        {
-            foreach (var propB in inProps)
-            {
-                if (propB.Name == prop.Name)
-                    return prop;
-            }
-            return null;
-        }
-
-        private MethodInfo FindEquivalentMethod(MethodInfo method, MethodInfo[] inMethods)
-        {
-            foreach(var methodB in inMethods)
-            {
-                if (methodB.Name == method.Name && Utility.ArraysMatch(ReflectionUtility.GetParameterTypes(method), ReflectionUtility.GetParameterTypes(methodB)))
-                    return methodB;
-            }
-            return null;
         }
     }
 }

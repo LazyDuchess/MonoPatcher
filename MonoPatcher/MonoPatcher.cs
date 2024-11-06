@@ -11,6 +11,9 @@ namespace MonoPatcherLib
 {
     public static class MonoPatcher
     {
+        public static string ReplacementLog { get; private set; } = string.Empty;
+        public static int ReplacementCount { get; private set; } = 0;
+
         public enum InitializationTypes
         {
             /// <summary>
@@ -41,6 +44,11 @@ namespace MonoPatcherLib
         /// All plugins loaded by MonoPatcher.
         /// </summary>
         public static List<LoadedPlugin> Plugins = new List<LoadedPlugin>();
+
+        private static void Log(string text)
+        {
+            ReplacementLog += $"{text}\n";
+        }
 
         public static void Initialize(InitializationTypes initType)
         {
@@ -99,8 +107,13 @@ namespace MonoPatcherLib
                 var replacementMethodHandle = replacementMethod.MethodHandle.Value;
                 var replacementByteArray = new byte[40];
                 Marshal.Copy(replacementMethodHandle, replacementByteArray, 0, 40);
+
+                // Don't replace name for metadata/reflection/etc reasons.
                 Marshal.Copy(replacementByteArray, 0, originalMethodHandle, 24);
-                Marshal.Copy(replacementByteArray, 28, new IntPtr((int*)originalMethodHandle.ToPointer() + 28), 12);
+                Marshal.Copy(replacementByteArray, 28, new IntPtr(originalMethodHandle.ToInt32() + 28), 12);
+
+                Log($"Replaced {originalMethod.Name} ({originalMethodHandle.ToInt32().ToString("X")}) with {replacementMethod.Name} ({replacementMethodHandle.ToInt32().ToString("X")})");
+                ReplacementCount++;
             }
         }
 
@@ -153,6 +166,11 @@ namespace MonoPatcherLib
             CommandSystem.RegisterCommand("monopatcher", "Shows info about MonoPatcher", (object[] args) =>
             {
                 SimpleMessageDialog.Show("MonoPatcher", $"Version: {Version}\nInitialization Type: {InitializationType}");
+                return 1;
+            });
+            CommandSystem.RegisterCommand("monopatcher_log", "Shows MonoPatcher log", (object[] args) =>
+            {
+                SimpleMessageDialog.Show("MonoPatcher", $"Replaced {ReplacementCount} methods.\n{ReplacementLog}");
                 return 1;
             });
         }

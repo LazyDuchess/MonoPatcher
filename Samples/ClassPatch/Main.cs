@@ -7,22 +7,14 @@ using System.Text;
 
 namespace ClassPatch
 {
+    // Classes with the [Plugin] attribute will be automatically created as soon as possible by MonoPatcher. You don't need a tuning XML to instantiate.
     [Plugin]
     public class Main
     {
         public Main()
         {
+            // Applies all patches found in your mod's DLL.
             MonoPatcher.PatchAll();
-            World.sOnStartupAppEventHandler += OnStartupApp;
-        }
-
-        private static void OnStartupApp(object sender, EventArgs e)
-        {
-            CommandSystem.RegisterCommand("classpatchworks", "Class patch works!", (object[] args) =>
-            {
-                SimpleMessageDialog.Show("MonoPatcher", $"Version: {MonoPatcher.Version}\nInitialization Type: {MonoPatcher.InitializationType}");
-                return 1;
-            });
         }
     }
 }

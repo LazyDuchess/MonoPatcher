@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace MonoPatcherLib
@@ -14,6 +15,26 @@ namespace MonoPatcherLib
                 if (array1.GetValue(i) != array2.GetValue(i)) return false;
             }
             return true;
+        }
+
+        public static PropertyInfo FindEquivalentProperty(PropertyInfo prop, PropertyInfo[] inProps)
+        {
+            foreach (var propB in inProps)
+            {
+                if (propB.Name == prop.Name)
+                    return prop;
+            }
+            return null;
+        }
+
+        public static MethodInfo FindEquivalentMethod(MethodInfo method, MethodInfo[] inMethods)
+        {
+            foreach (var methodB in inMethods)
+            {
+                if (methodB.Name == method.Name && Utility.ArraysMatch(ReflectionUtility.GetParameterTypes(method), ReflectionUtility.GetParameterTypes(methodB)))
+                    return methodB;
+            }
+            return null;
         }
     }
 }

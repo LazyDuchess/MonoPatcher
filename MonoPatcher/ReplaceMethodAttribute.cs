@@ -14,6 +14,12 @@ namespace MonoPatcherLib
         public Type Type;
         public MethodInfo MethodToReplace;
 
+        public ReplaceMethodAttribute(Type type)
+        {
+            Type = type;
+            MethodToReplace = null;
+        }
+
         public ReplaceMethodAttribute(Type type, string method)
         {
             Type = type;
@@ -26,14 +32,13 @@ namespace MonoPatcherLib
             MethodToReplace = ReflectionUtility.GetMethod(method, type, argTypes);
         }
 
-        public ReplaceMethodAttribute(Type type, MethodInfo method)
-        {
-            Type = type;
-            MethodToReplace = method;
-        }
-
         public void Apply(MethodInfo replacement)
         {
+            if (MethodToReplace == null)
+            {
+                var methods = Type.GetMethods(ReflectionUtility.DefaultBindingFlags);
+                MethodToReplace = Utility.FindEquivalentMethod(replacement, methods);
+            }
             MonoPatcher.ReplaceMethod(MethodToReplace, replacement);
         }
     }
