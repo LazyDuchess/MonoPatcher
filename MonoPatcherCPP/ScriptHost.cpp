@@ -6,5 +6,5 @@ ScriptHost* ScriptHost::GetInstance() {
 }
 
 void ScriptHost::CreateMonoService(char* nspace, char* classname) {
-	((void(__thiscall*)(char* nspace, char* classname))0x00411200)(this);
+	((void(__thiscall*)(char* nspace, char* classname))0x00411200)(nspace, classname);
 }
