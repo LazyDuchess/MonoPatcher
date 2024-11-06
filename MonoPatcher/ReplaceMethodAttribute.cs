@@ -9,7 +9,7 @@ namespace MonoPatcherLib
     /// Overrides a method with this.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
-    public class ReplaceMethodAttribute : Attribute
+    public class ReplaceMethodAttribute : PatchAttribute
     {
         public Type Type;
         public MethodInfo MethodToReplace;
@@ -32,14 +32,15 @@ namespace MonoPatcherLib
             MethodToReplace = ReflectionUtility.GetMethod(method, type, argTypes);
         }
 
-        public void Apply(MethodInfo replacement)
+        public override void Apply(object replacement)
         {
+            var methodReplacement = replacement as MethodInfo;
             if (MethodToReplace == null)
             {
                 var methods = Type.GetMethods(ReflectionUtility.DefaultBindingFlags);
-                MethodToReplace = Utility.FindEquivalentMethod(replacement, methods);
+                MethodToReplace = Utility.FindEquivalentMethod(methodReplacement, methods);
             }
-            MonoPatcher.ReplaceMethod(MethodToReplace, replacement);
+            MonoPatcher.ReplaceMethod(MethodToReplace, methodReplacement);
         }
     }
 }

@@ -50,6 +50,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="PatchAttribute.cs" />
     <Compile Include="ReplaceMethodAttribute.cs" />
     <Compile Include="ReplacePropertyAttribute.cs" />
     <Compile Include="TypePatchAttribute.cs" />

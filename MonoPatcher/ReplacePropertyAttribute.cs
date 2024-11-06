@@ -9,7 +9,7 @@ namespace MonoPatcherLib
     /// Overrides a property with this one.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = false)]
-    public class ReplacePropertyAttribute : Attribute
+    public class ReplacePropertyAttribute : PatchAttribute
     {
         public Type Type;
         public PropertyInfo PropertyToReplace;
@@ -26,14 +26,15 @@ namespace MonoPatcherLib
             PropertyToReplace = ReflectionUtility.GetProperty(property, type);
         }
 
-        public void Apply(PropertyInfo replacement)
+        public override void Apply(object replacement)
         {
+            var propertyReplacement = replacement as PropertyInfo;
             if (PropertyToReplace == null)
             {
                 var props = Type.GetProperties(ReflectionUtility.DefaultBindingFlags);
-                PropertyToReplace = Utility.FindEquivalentProperty(replacement, props);
+                PropertyToReplace = Utility.FindEquivalentProperty(propertyReplacement, props);
             }
-            MonoPatcher.ReplaceProperty(PropertyToReplace, replacement);
+            MonoPatcher.ReplaceProperty(PropertyToReplace, propertyReplacement);
         }
     }
 }
