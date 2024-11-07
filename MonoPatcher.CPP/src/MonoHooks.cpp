@@ -5,6 +5,14 @@
 
 std::map<void*, HookedMethod> MonoHooks::HookedMethodMap;
 
+void __stdcall unmanaged_trampoline() {
+	printf("\nTrampoline!\n");
+}
+
+void* __stdcall get_unmanaged_trampoline() {
+	return unmanaged_trampoline;
+}
+
 void __stdcall replace_il_for_mono_method(void* method, char* ilbegin, int ilsize) {
 	MonoHooks::HookedMethodMap[method] = HookedMethod(ilbegin, ilsize);
 }
@@ -24,6 +32,7 @@ int __cdecl DetourGenerateCode(MonoMethod* method, void* unk1, void* unk2, void*
 
 void MonoHooks::InitializeScriptHost() {
 	mono_add_internal_call("MonoPatcherLib.Internal.Hooking::ReplaceMethodIL", replace_il_for_mono_method);
+	mono_add_internal_call("MonoPatcherLib.Internal.Hooking::GetUnmanagedTrampoline", get_unmanaged_trampoline);
 }
 
 bool MonoHooks::Initialize() {

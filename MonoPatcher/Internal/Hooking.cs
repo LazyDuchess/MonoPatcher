@@ -14,6 +14,8 @@ namespace MonoPatcherLib.Internal
         public static Dictionary<IntPtr, WeavedMethod> WeavedMethods = new Dictionary<IntPtr, WeavedMethod>();
         [DllImport("Sims3Common.dll")]
         public static extern void ReplaceMethodIL(IntPtr methodPtr, IntPtr ilBegin, int ilSize);
+        [DllImport("Sims3Common.dll")]
+        public static extern IntPtr GetUnmanagedTrampoline();
 
         public class WeavedMethod : IDisposable
         {

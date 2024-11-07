@@ -223,6 +223,11 @@ namespace MonoPatcherLib
                 SimpleMessageDialog.Show("MonoPatcher", $"Replaced {ReplacementCount} methods.\n{ReplacementLog}");
                 return 1;
             });
+            CommandSystem.RegisterCommand("monopatcher_trampoline", "Shows MonoPatcher unmanaged trampoline address", (object[] args) =>
+            {
+                SimpleMessageDialog.Show("MonoPatcher", $"Unmanaged trampoline is {Hooking.GetUnmanagedTrampoline().ToInt32().ToString("X")}");
+                return 1;
+            });
             CommandSystem.RegisterCommand("monopatcher_clearcache", "Clears Reflection stuff and executes GC.", (object[] args) =>
             {
                 Simulator.ClearReflectionCache();
