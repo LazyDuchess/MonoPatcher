@@ -116,6 +116,12 @@ namespace MonoPatcherLib
 
                 Log($"Replaced {originalMethod.Name} ({originalMethodHandle.ToInt32().ToString("X")}) with {replacementMethod.Name} ({replacementMethodHandle.ToInt32().ToString("X")})");
                 ReplacementCount++;
+
+                if (Hooking.WeavedMethods.TryGetValue(originalMethodHandle, out var weavedMethod))
+                {
+                    weavedMethod.Dispose();
+                    Hooking.WeavedMethods.Remove(originalMethodHandle);
+                }
             }
         }
 
