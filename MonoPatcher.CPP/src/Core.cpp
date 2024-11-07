@@ -3,6 +3,7 @@
 #include "iostream"
 #include "MinHook.h"
 #include "Sims3/ScriptHost.h"
+#include "Sims3/mono.h"
 #include "GameAddresses.h"
 
 typedef int(__thiscall *INITIALIZESCRIPTHOST)(void* me);
@@ -28,6 +29,10 @@ bool Core::Create() {
 	return _instance->Initialize();
 }
 
+void __stdcall Test() {
+	printf("Hello from IL!");
+}
+
 bool Core::Initialize() {
 	printf("Mono Patcher CPP Core initializing\n");
 
@@ -48,5 +53,8 @@ bool Core::Initialize() {
 	{
 		return false;
 	}
+
+	mono_add_internal_call("MonoPatcherLib.Internal.ILGeneration::Test", Test);
+
 	return true;
 }

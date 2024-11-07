@@ -192,6 +192,11 @@ namespace MonoPatcherLib
                 SimpleMessageDialog.Show("MonoPatcher", $"Replaced {ReplacementCount} methods.\n{ReplacementLog}");
                 return 1;
             });
+            CommandSystem.RegisterCommand("monopatcher_internalcall", "Test MonoPatcher native call", (object[] args) =>
+            {
+                Internal.ILGeneration.Test();
+                return 1;
+            });
         }
     }
 }

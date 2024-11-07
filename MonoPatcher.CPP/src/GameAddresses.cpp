@@ -18,6 +18,10 @@ char CreateMonoClassLookupMask[] = "xxxxxxxxxxxxxxxxxxx????xxxxxx";
 char InitializeScriptHostLookup[] = { 0x51, 0x53, 0x56, 0x57, 0x8B, 0xF1, 0xE8, 0xB5, 0xD6, 0x4C, 0x00, 0x33, 0xDB, 0x3B, 0xC3, 0x74, 0x13, 0x8B, 0x10, 0x68, 0x10, 0x27, 0x00, 0x00 };
 char InitializeScriptHostLookupMask[] = "xxxxxxx????xxxx??xxxxxxx";
 
+// Location: 0x00515f40 (1.69)
+char MonoAddInternalCallLookup[] = { 0xE8, 0xEB, 0x2A, 0x00, 0x00, 0x8B, 0x44, 0x24, 0x08, 0x8B, 0x4C, 0x24, 0x04, 0x6A, 0x00, 0x50, 0x51, 0xE8, 0x5A, 0x5B, 0xFC, 0xFF, 0x8B, 0x15, 0x1C, 0xF3, 0x20, 0x01, 0x83, 0xC4, 0x04 };
+char MonoAddInternalCallLookupMask[] = "x????xxxxxxxxxxxxx????x?????xxx";
+
 bool GameAddresses::RegisterAddress(char* name, char* address) {
 	if (address != nullptr) {
 		printf("GameAddresses: Registering %s pointing to %p\n", name, address);
@@ -42,5 +46,6 @@ bool GameAddresses::Initialize() {
 	if (!RegisterAddress("ScriptHost::GetInstance", (char*)shinstancePointer)) return false;
 	if (!RegisterAddress("ScriptHost::CreateMonoClass", ScanInternal(CreateMonoClassLookup, CreateMonoClassLookupMask, modBase, size))) return false;
 	if (!RegisterAddress("InitializeScriptHost", ScanInternal(InitializeScriptHostLookup, InitializeScriptHostLookupMask, modBase, size))) return false;
+	if (!RegisterAddress("mono_add_internal_call", ScanInternal(MonoAddInternalCallLookup, MonoAddInternalCallLookupMask, modBase, size))) return false;
 	return true;
 }
