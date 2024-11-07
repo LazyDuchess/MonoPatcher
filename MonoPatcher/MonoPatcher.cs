@@ -54,6 +54,8 @@ namespace MonoPatcherLib
         {
             InitializationType = initType;
             if (initType == InitializationTypes.None) return;
+            var nopMethod = typeof(MonoPatcher).GetMethod(nameof(MonoPatcher.ToNOP), BindingFlags.NonPublic | BindingFlags.Static);
+            ReplaceIL(nopMethod, nopMethod.GetMethodBody().GetILAsByteArray());
             World.sOnStartupAppEventHandler += OnStartupApp;
             LoadPlugins();
         }
@@ -115,6 +117,13 @@ namespace MonoPatcherLib
                 Log($"Replaced {originalMethod.Name} ({originalMethodHandle.ToInt32().ToString("X")}) with {replacementMethod.Name} ({replacementMethodHandle.ToInt32().ToString("X")})");
                 ReplacementCount++;
             }
+        }
+
+        public static void ReplaceIL(MethodInfo originalMethod, byte[] il)
+        {
+            var heapAlloc = Marshal.AllocHGlobal(il.Length);
+            Marshal.Copy(il, 0, heapAlloc, il.Length);
+            Internal.Hooking.ReplaceMethodIL(originalMethod.MethodHandle.Value, heapAlloc, il.Length);
         }
 
         public static void ReplaceProperty(PropertyInfo originalProp, PropertyInfo replacementProp)
@@ -197,6 +206,16 @@ namespace MonoPatcherLib
                 Internal.ILGeneration.Test();
                 return 1;
             });
+            CommandSystem.RegisterCommand("monopatcher_testhook", "Test MonoPatcher IL replacement", (object[] args) =>
+            {
+                ToNOP();
+                return 1;
+            });
+        }
+
+        private static void ToNOP()
+        {
+            SimpleMessageDialog.Show("MonoPatcher", "This should not display!");
         }
     }
 }

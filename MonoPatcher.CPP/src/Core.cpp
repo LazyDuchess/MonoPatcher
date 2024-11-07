@@ -5,6 +5,7 @@
 #include "Sims3/ScriptHost.h"
 #include "GameAddresses.h"
 #include "mono.h"
+#include "MonoHooks.h"
 
 void __stdcall Test() {
 	printf("Hello from IL!\n");
@@ -19,6 +20,7 @@ int __fastcall DetourInitializeScriptHost(void* me, void* _) {
 	printf("Initializing ScriptHost");
 	int result = fpInitializeScriptHost(me);
 	mono_add_internal_call("MonoPatcherLib.Internal.ILGeneration::Test", Test);
+	MonoHooks::InitializeScriptHost();
 	ScriptHost::GetInstance()->CreateMonoClass("MonoPatcherLib", "DLLEntryPoint");
 	return result;
 }
@@ -54,5 +56,11 @@ bool Core::Initialize() {
 	{
 		return false;
 	}
+	
+	if (!MonoHooks::Initialize()) 
+	{
+		return false;
+	}
+
 	return true;
 }
