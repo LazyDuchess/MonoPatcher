@@ -7,6 +7,32 @@ namespace MonoPatcherLib
 {
     public static class Utility
     {
+        public static int FindInByteArray(byte[] array, byte[] search)
+        {
+            var result = -1;
+            var currenti = 0;
+            var matchingSoFar = false;
+            for(var i = 0; i < array.Length; i++)
+            {
+                if (array[i] == search[currenti])
+                {
+                    if (!matchingSoFar)
+                        result = i;
+                    currenti++;
+                    matchingSoFar = true;
+                    if (currenti >= search.Length)
+                        return result;
+                }
+                else if (matchingSoFar)
+                {
+                    result = -1;
+                    currenti = 0;
+                    matchingSoFar = false;
+                }
+            }
+            return -1;
+        }
+
         public static bool ArraysMatch(Array array1, Array array2)
         {
             if (array1.Length != array2.Length) return false;
