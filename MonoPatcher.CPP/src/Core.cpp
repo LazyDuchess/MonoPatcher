@@ -3,8 +3,8 @@
 #include "iostream"
 #include "MinHook.h"
 #include "Sims3/ScriptHost.h"
-#include "Sims3/mono.h"
 #include "GameAddresses.h"
+#include "mono.h"
 
 typedef int(__thiscall *INITIALIZESCRIPTHOST)(void* me);
 
