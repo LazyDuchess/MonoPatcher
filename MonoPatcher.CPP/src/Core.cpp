@@ -7,10 +7,6 @@
 #include "mono.h"
 #include "MonoHooks.h"
 
-void __stdcall Test(LPWSTR text) {
-	wprintf(L"%ls\n", text + 4);
-}
-
 typedef int(__thiscall *INITIALIZESCRIPTHOST)(void* me);
 
 INITIALIZESCRIPTHOST fpInitializeScriptHost = NULL;
@@ -19,7 +15,6 @@ INITIALIZESCRIPTHOST fpInitializeScriptHost = NULL;
 int __fastcall DetourInitializeScriptHost(void* me, void* _) {
 	printf("Initializing ScriptHost");
 	int result = fpInitializeScriptHost(me);
-	mono_add_internal_call("MonoPatcherLib.Internal.ILGeneration::Test", Test);
 	MonoHooks::InitializeScriptHost();
 	ScriptHost::GetInstance()->CreateMonoClass("MonoPatcherLib", "DLLEntryPoint");
 	return result;
