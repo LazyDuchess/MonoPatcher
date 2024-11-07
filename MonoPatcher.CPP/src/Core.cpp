@@ -7,8 +7,8 @@
 #include "mono.h"
 #include "MonoHooks.h"
 
-void __stdcall Test() {
-	printf("Hello from IL!\n");
+void __stdcall Test(LPWSTR text) {
+	wprintf(L"%ls\n", text + 4);
 }
 
 typedef int(__thiscall *INITIALIZESCRIPTHOST)(void* me);

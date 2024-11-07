@@ -1,8 +1,10 @@
-﻿using Sims3.SimIFace;
+﻿using MonoPatcherLib.Internal;
+using Sims3.SimIFace;
 using Sims3.UI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -54,9 +56,6 @@ namespace MonoPatcherLib
         {
             InitializationType = initType;
             if (initType == InitializationTypes.None) return;
-            var nopMethod = typeof(MonoPatcher).GetMethod(nameof(MonoPatcher.ToNOP), BindingFlags.NonPublic | BindingFlags.Static);
-            //ReplaceIL(nopMethod, nopMethod.GetMethodBody().GetILAsByteArray());
-            ReplaceIL(nopMethod, new byte[] {0x2A});
             World.sOnStartupAppEventHandler += OnStartupApp;
             LoadPlugins();
         }
@@ -120,12 +119,40 @@ namespace MonoPatcherLib
             }
         }
 
+        /// <summary>
+        /// Replaces the IL (Intermediate Language) bytecode for a method. This needs the ASI to work - if InitializationType is NOT CPP nothing will happen.
+        /// </summary>
         public static void ReplaceIL(MethodInfo originalMethod, byte[] il)
         {
+            if (InitializationType != InitializationTypes.CPP) return;
             var heapAlloc = Marshal.AllocHGlobal(il.Length);
             Marshal.Copy(il, 0, heapAlloc, il.Length);
             Internal.Hooking.ReplaceMethodIL(originalMethod.MethodHandle.Value, heapAlloc, il.Length);
         }
+
+        /*
+        public static void DoTrampoline(MethodInfo originalMethod)
+        {
+            var originalIL = originalMethod.GetMethodBody().GetILAsByteArray();
+            using (var ms = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(ms))
+                {
+                    // ldc.i4 (ptr)
+                    writer.Write((byte)0x20);
+                    writer.Write(Internal.Hooking.TrampolinePtr.ToInt32());
+                    // calli
+                    writer.Write((byte)0x29);
+                    writer.Write((byte)0x07);
+                    writer.Write((byte)0x00);
+                    writer.Write((byte)0x00);
+                    writer.Write((byte)0x11);
+                    writer.Write(originalIL);
+                    ms.Flush();
+                    ReplaceIL(originalMethod, ms.ToArray());
+                }
+            }
+        }*/
 
         public static void ReplaceProperty(PropertyInfo originalProp, PropertyInfo replacementProp)
         {
@@ -202,16 +229,6 @@ namespace MonoPatcherLib
                 SimpleMessageDialog.Show("MonoPatcher", $"Replaced {ReplacementCount} methods.\n{ReplacementLog}");
                 return 1;
             });
-            CommandSystem.RegisterCommand("monopatcher_internalcall", "Test MonoPatcher native call", (object[] args) =>
-            {
-                Internal.ILGeneration.Test();
-                return 1;
-            });
-            CommandSystem.RegisterCommand("monopatcher_testhook", "Test MonoPatcher IL replacement", (object[] args) =>
-            {
-                ToNOP();
-                return 1;
-            });
             CommandSystem.RegisterCommand("monopatcher_clearcache", "Clears Reflection stuff and executes GC.", (object[] args) =>
             {
                 Simulator.ClearReflectionCache();
@@ -222,7 +239,7 @@ namespace MonoPatcherLib
 
         private static void ToNOP()
         {
-            SimpleMessageDialog.Show("MonoPatcher", "This should not display!");
+            SimpleMessageDialog.Show("MonoPatcher", $"Version: {Version}\nInitialization Type: {InitializationType}");
         }
     }
 }
