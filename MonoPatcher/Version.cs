@@ -36,23 +36,23 @@ namespace MonoPatcherLib
         }
 
         /// <summary>
-        /// Check if the version in compareVersion is higher, equal or lower than this.
+        /// Check if this version is higher, equal or lower compared to compareVersion.
         /// </summary>
-        public CompareResult Compare(string compareVersion)
+        public CompareResult CompareTo(string compareVersion)
         {
-            return Compare(new Version(compareVersion));
+            return CompareTo(new Version(compareVersion));
         }
 
         /// <summary>
-        /// Check if the version in compareVersion is higher, equal or lower than this.
+        /// Check if this version is higher, equal or lower compared to compareVersion.
         /// </summary>
-        public CompareResult Compare(Version compareVersion)
+        public CompareResult CompareTo(Version compareVersion)
         {
             for(var i = 0; i < 3; i++)
             {
-                if (compareVersion.Array[i] > Array[i])
+                if (compareVersion.Array[i] < Array[i])
                     return CompareResult.Higher;
-                else if (compareVersion.Array[i] < Array[i])
+                else if (compareVersion.Array[i] > Array[i])
                     return CompareResult.Lower;
             }
             return CompareResult.Equal;
