@@ -132,6 +132,8 @@ namespace MonoPatcherLib
                 alloc.Dispose();
             }
             Hooking.WeavedMethods[method.MethodHandle.Value] = new Hooking.WeavedMethod(heapAlloc, il.Length);
+            ReplacementCount++;
+            Log($"Edited the IL instructions for {method.Name} ({method.MethodHandle.Value.ToInt32().ToString("X")})");
         }
 
         /// <summary>
