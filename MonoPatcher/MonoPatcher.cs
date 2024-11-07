@@ -122,37 +122,29 @@ namespace MonoPatcherLib
         /// <summary>
         /// Replaces the IL (Intermediate Language) bytecode for a method. This needs the ASI to work - if InitializationType is NOT CPP nothing will happen.
         /// </summary>
-        public static void ReplaceIL(MethodInfo originalMethod, byte[] il)
+        public static void ReplaceIL(MethodInfo method, byte[] il)
         {
             if (InitializationType != InitializationTypes.CPP) return;
             var heapAlloc = Marshal.AllocHGlobal(il.Length);
             Marshal.Copy(il, 0, heapAlloc, il.Length);
-            Internal.Hooking.ReplaceMethodIL(originalMethod.MethodHandle.Value, heapAlloc, il.Length);
+            Hooking.ReplaceMethodIL(method.MethodHandle.Value, heapAlloc, il.Length);
+            if (Hooking.WeavedMethods.TryGetValue(method.MethodHandle.Value, out var alloc)){
+                alloc.Dispose();
+            }
+            Hooking.WeavedMethods[method.MethodHandle.Value] = new Hooking.WeavedMethod(heapAlloc, il.Length);
         }
 
-        /*
-        public static void DoTrampoline(MethodInfo originalMethod)
+        /// <summary>
+        /// Retrieves the current IL (Intermediate Language) bytecode for a method.
+        /// </summary>
+        public static byte[] GetIL(MethodInfo method)
         {
-            var originalIL = originalMethod.GetMethodBody().GetILAsByteArray();
-            using (var ms = new MemoryStream())
+            if (Hooking.WeavedMethods.TryGetValue(method.MethodHandle.Value, out var alloc))
             {
-                using (var writer = new BinaryWriter(ms))
-                {
-                    // ldc.i4 (ptr)
-                    writer.Write((byte)0x20);
-                    writer.Write(Internal.Hooking.TrampolinePtr.ToInt32());
-                    // calli
-                    writer.Write((byte)0x29);
-                    writer.Write((byte)0x07);
-                    writer.Write((byte)0x00);
-                    writer.Write((byte)0x00);
-                    writer.Write((byte)0x11);
-                    writer.Write(originalIL);
-                    ms.Flush();
-                    ReplaceIL(originalMethod, ms.ToArray());
-                }
+                return alloc.GetBytes();
             }
-        }*/
+            return method.GetMethodBody().GetILAsByteArray();
+        }
 
         public static void ReplaceProperty(PropertyInfo originalProp, PropertyInfo replacementProp)
         {

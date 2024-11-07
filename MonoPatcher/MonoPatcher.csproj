@@ -51,7 +51,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Internal\Hooking.cs" />
-    <Compile Include="Internal\ILGeneration.cs" />
     <Compile Include="ReplaceMethodAttribute.cs" />
     <Compile Include="ReplacePropertyAttribute.cs" />
     <Compile Include="TypePatchAttribute.cs" />
