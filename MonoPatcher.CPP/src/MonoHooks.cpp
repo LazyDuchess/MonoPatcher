@@ -6,7 +6,7 @@
 std::map<void*, HookedMethod> MonoHooks::HookedMethodMap;
 
 void __stdcall replace_il_for_mono_method(void* method, char* ilbegin, int ilsize) {
-	printf("Replaced IL for method %p with %p, size %i\n", method, ilbegin, ilsize);
+	//printf("Replaced IL for method %p with %p, size %i\n", method, ilbegin, ilsize);
 	MonoHooks::HookedMethodMap[method] = HookedMethod(ilbegin, ilsize);
 }
 
@@ -16,7 +16,7 @@ GENERATECODE fpGenerateCode = NULL;
 
 int __cdecl DetourGenerateCode(MonoMethod* method, void* unk1, void* unk2, void* unk3) {
 	if (MonoHooks::HookedMethodMap.count(method)) {
-		printf("\nRunning generate_code for hooked method: %p\n", method);
+		//printf("\nRunning generate_code for hooked method: %p\n", method);
 		HookedMethod hookedMethod = MonoHooks::HookedMethodMap[method];
 		method->header->codeSize = hookedMethod.ilSize;
 		method->header->ilBegin = hookedMethod.ilBegin;

@@ -55,7 +55,8 @@ namespace MonoPatcherLib
             InitializationType = initType;
             if (initType == InitializationTypes.None) return;
             var nopMethod = typeof(MonoPatcher).GetMethod(nameof(MonoPatcher.ToNOP), BindingFlags.NonPublic | BindingFlags.Static);
-            ReplaceIL(nopMethod, nopMethod.GetMethodBody().GetILAsByteArray());
+            //ReplaceIL(nopMethod, nopMethod.GetMethodBody().GetILAsByteArray());
+            ReplaceIL(nopMethod, new byte[] {0x2A});
             World.sOnStartupAppEventHandler += OnStartupApp;
             LoadPlugins();
         }
