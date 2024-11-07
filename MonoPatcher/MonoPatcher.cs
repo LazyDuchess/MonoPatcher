@@ -211,6 +211,12 @@ namespace MonoPatcherLib
                 ToNOP();
                 return 1;
             });
+            CommandSystem.RegisterCommand("monopatcher_clearcache", "Clears Reflection stuff and executes GC.", (object[] args) =>
+            {
+                Simulator.ClearReflectionCache();
+                System.GC.Collect();
+                return 1;
+            });
         }
 
         private static void ToNOP()

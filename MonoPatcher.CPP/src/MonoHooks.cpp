@@ -17,6 +17,9 @@ GENERATECODE fpGenerateCode = NULL;
 int __cdecl DetourGenerateCode(MonoMethod* method, void* unk1, void* unk2, void* unk3) {
 	if (MonoHooks::HookedMethodMap.count(method)) {
 		printf("\nRunning generate_code for hooked method: %p\n", method);
+		HookedMethod hookedMethod = MonoHooks::HookedMethodMap[method];
+		method->header->codeSize = hookedMethod.ilSize;
+		method->header->ilBegin = hookedMethod.ilBegin;
 	}
 	return fpGenerateCode(method, unk1, unk2, unk3);
 }
