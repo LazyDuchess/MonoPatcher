@@ -6,6 +6,10 @@
 #include "GameAddresses.h"
 #include "mono.h"
 
+void __stdcall Test() {
+	printf("Hello from IL!\n");
+}
+
 typedef int(__thiscall *INITIALIZESCRIPTHOST)(void* me);
 
 INITIALIZESCRIPTHOST fpInitializeScriptHost = NULL;
@@ -14,6 +18,7 @@ INITIALIZESCRIPTHOST fpInitializeScriptHost = NULL;
 int __fastcall DetourInitializeScriptHost(void* me, void* _) {
 	printf("Initializing ScriptHost");
 	int result = fpInitializeScriptHost(me);
+	mono_add_internal_call("MonoPatcherLib.Internal.ILGeneration::Test", Test);
 	ScriptHost::GetInstance()->CreateMonoClass("MonoPatcherLib", "DLLEntryPoint");
 	return result;
 }
@@ -27,10 +32,6 @@ Core* Core::GetInstance() {
 bool Core::Create() {
 	_instance = new Core();
 	return _instance->Initialize();
-}
-
-void __stdcall Test() {
-	printf("Hello from IL!");
 }
 
 bool Core::Initialize() {
@@ -53,8 +54,5 @@ bool Core::Initialize() {
 	{
 		return false;
 	}
-
-	mono_add_internal_call("MonoPatcherLib.Internal.ILGeneration::Test", Test);
-
 	return true;
 }
