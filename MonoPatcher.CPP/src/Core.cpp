@@ -3,6 +3,7 @@
 #include "iostream"
 #include "MinHook.h"
 #include "Sims3/ScriptHost.h"
+#include "GameAddresses.h"
 
 typedef int(__thiscall *INITIALIZESCRIPTHOST)(void* me);
 
@@ -29,17 +30,21 @@ bool Core::Create() {
 
 bool Core::Initialize() {
 	printf("Mono Patcher CPP Core initializing\n");
+
+	if (!GameAddresses::Initialize())
+		return false;
+
 	// Initialize MinHook.
 	if (MH_Initialize() != MH_OK)
 		return false;
 
-	if (MH_CreateHook((void*)0x00411be0, &DetourInitializeScriptHost,
+	if (MH_CreateHook((void*)GameAddresses::Addresses["InitializeScriptHost"], &DetourInitializeScriptHost,
 		reinterpret_cast<LPVOID*>(&fpInitializeScriptHost)) != MH_OK)
 	{
 		return false;
 	}
 
-	if (MH_EnableHook((void*)0x00411be0) != MH_OK)
+	if (MH_EnableHook((void*)GameAddresses::Addresses["InitializeScriptHost"]) != MH_OK)
 	{
 		return false;
 	}
