@@ -97,6 +97,15 @@ namespace MonoPatcherLib
                 }
             }
         }
+
+        /// <summary>
+        /// Marks a method for recompilation. This is done automatically when replacing methods, so you shouldn't need to do this. Only works if the ASI is loaded. (InitializationType CPP)
+        /// </summary>
+        public static void RecompileMethod(MethodInfo method)
+        {
+            if (InitializationType != InitializationTypes.CPP) return;
+            Hooking.MarkMethodForJIT(method.MethodHandle.Value);
+        }
         
         /// <summary>
         /// Fully replaces a method with a new one. Make sure the parameters and return values match.
@@ -122,6 +131,8 @@ namespace MonoPatcherLib
                     weavedMethod.Dispose();
                     Hooking.WeavedMethods.Remove(originalMethodHandle);
                 }
+
+                RecompileMethod(originalMethod);
             }
         }
 
@@ -140,6 +151,8 @@ namespace MonoPatcherLib
             Hooking.WeavedMethods[method.MethodHandle.Value] = new Hooking.WeavedMethod(heapAlloc, il.Length);
             ReplacementCount++;
             Log($"Edited the IL instructions for {method.Name} ({method.MethodHandle.Value.ToInt32().ToString("X")})");
+
+            RecompileMethod(method);
         }
 
         /// <summary>
