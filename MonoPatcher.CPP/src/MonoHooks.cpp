@@ -4,6 +4,11 @@
 #include "GameAddresses.h"
 
 std::map<void*, HookedMethod> MonoHooks::HookedMethodMap;
+std::set<void*> MonoHooks::JITMethodSet;
+
+void __stdcall mark_mono_method_for_jit(void* method) {
+	MonoHooks::JITMethodSet.insert(method);
+}
 
 void __stdcall replace_il_for_mono_method(void* method, char* ilbegin, int ilsize) {
 	MonoHooks::HookedMethodMap[method] = HookedMethod(ilbegin, ilsize);
@@ -24,6 +29,7 @@ int __cdecl DetourGenerateCode(MonoMethod* method, void* unk1, void* unk2, void*
 
 void MonoHooks::InitializeScriptHost() {
 	mono_add_internal_call("MonoPatcherLib.Internal.Hooking::ReplaceMethodIL", replace_il_for_mono_method);
+	mono_add_internal_call("MonoPatcherLib.Internal.Hooking::MarkMethodForJIT", mark_mono_method_for_jit);
 }
 
 bool MonoHooks::Initialize() {

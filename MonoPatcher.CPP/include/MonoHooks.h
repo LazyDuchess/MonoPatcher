@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <set>
 
 class HookedMethod {
 public:
@@ -11,6 +12,7 @@ public:
 
 namespace MonoHooks {
 	extern std::map<void*, HookedMethod> HookedMethodMap;
+	extern std::set<void*> JITMethodSet;
 	bool Initialize();
 	void InitializeScriptHost();
 }

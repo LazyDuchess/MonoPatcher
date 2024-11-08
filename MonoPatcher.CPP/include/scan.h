@@ -1,4 +1,5 @@
 #pragma once
+#include <Windows.h>
 
 void MakeJMP(BYTE* pAddress, DWORD dwJumpTo, DWORD dwLen);
 void Nop(BYTE* pAddress, DWORD dwLen);
