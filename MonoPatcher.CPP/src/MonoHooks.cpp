@@ -2,9 +2,66 @@
 #include "mono.h"
 #include "MinHook.h"
 #include "GameAddresses.h"
+#include "scan.h"
 
 std::map<void*, HookedMethod> MonoHooks::HookedMethodMap;
 std::set<void*> MonoHooks::JITMethodSet;
+
+bool __stdcall check_if_marked_for_jit(void* method) {
+	return MonoHooks::JITMethodSet.count(method);
+}
+
+bool __stdcall unmark_if_marked_for_jit(void* method) {
+	if (MonoHooks::JITMethodSet.count(method)) {
+		MonoHooks::JITMethodSet.erase(method);
+		return true;
+	}
+	return false;
+}
+
+char* jitcheck1_dont_generate;
+char* jitcheck1_generate;
+
+void __declspec(naked) JitCheck1Hook() {
+	__asm {
+		mov [ebp-0x10], edi
+		je generate
+		push ecx
+		push eax
+		push ebx
+		push ebp
+		push esp
+		mov ebx, [eax+0x13C]
+		test ebx, ebx
+		je nomethod
+		test ecx, ecx
+		je nomethod
+		// MonoMethod*
+		mov eax, [ebx]
+		push eax
+		call check_if_marked_for_jit
+		test al, al
+		pop esp
+		pop ebp
+		pop ebx
+		pop eax
+		pop ecx
+		mov esi, jitcheck1_dont_generate
+		je jump
+		generate:
+		mov esi, jitcheck1_generate
+	    jump:
+		jmp esi
+		nomethod:
+		pop esp
+		pop ebp
+		pop ebx
+		pop eax
+	    pop ecx
+		mov esi, jitcheck1_dont_generate
+		jmp esi
+	}
+}
 
 void __stdcall mark_mono_method_for_jit(void* method) {
 	MonoHooks::JITMethodSet.insert(method);
@@ -43,6 +100,11 @@ bool MonoHooks::Initialize() {
 	{
 		return false;
 	}
+
+	MakeJMP((BYTE*)GameAddresses::Addresses["jit_check_1"], (DWORD)JitCheck1Hook, 5);
+
+	jitcheck1_generate = GameAddresses::Addresses["jit_check_1"] + 5;
+	jitcheck1_dont_generate = jitcheck1_generate + 38;
 	return true;
 }
 
