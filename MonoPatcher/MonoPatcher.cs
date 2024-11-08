@@ -248,6 +248,23 @@ namespace MonoPatcherLib
                 System.GC.Collect();
                 return 1;
             });
+            CommandSystem.RegisterCommand("monopatcher_nop", "Nop test", (object[] args) =>
+            {
+                ToNOP();
+                return 1;
+            });
+            CommandSystem.RegisterCommand("monopatcher_replace", "Replace nop", (object[] args) =>
+            {
+                var nopMethod = typeof(MonoPatcher).GetMethod(nameof(ToNOP), BindingFlags.NonPublic | BindingFlags.Static);
+                var nopReplaceMethod = typeof(MonoPatcher).GetMethod(nameof(ToNOPReplace), BindingFlags.NonPublic | BindingFlags.Static);
+                ReplaceMethod(nopMethod, nopReplaceMethod);
+                return 1;
+            });
+        }
+
+        private static void ToNOPReplace()
+        {
+            SimpleMessageDialog.Show("MonoPatcher", $"IVE BEEN REPLACED!");
         }
 
         private static void ToNOP()

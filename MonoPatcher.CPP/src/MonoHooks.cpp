@@ -8,7 +8,12 @@ std::map<void*, HookedMethod> MonoHooks::HookedMethodMap;
 std::set<void*> MonoHooks::JITMethodSet;
 
 bool __stdcall check_if_marked_for_jit(void* method) {
-	return MonoHooks::JITMethodSet.count(method);
+	if (MonoHooks::JITMethodSet.count(method))
+	{
+		printf("Method %p is marked for JIT!", method);
+		return true;
+	}
+	return false;
 }
 
 bool __stdcall unmark_if_marked_for_jit(void* method) {
@@ -34,14 +39,12 @@ void __declspec(naked) JitCheck1Hook() {
 		push ebp
 		push esp
 		// null check these
-		mov ebx, [eax+0x13C]
+		mov esi, [ebp+0x8]
 		// test with oneself is false if zero
-		test ebx, ebx
-		je nomethod
-		test ecx, ecx
+		test esi, esi
 		je nomethod
 		// MonoMethod*
-		mov eax, [ebx]
+		mov eax, [esi]
 		push eax
 		call check_if_marked_for_jit
 		test al, al
