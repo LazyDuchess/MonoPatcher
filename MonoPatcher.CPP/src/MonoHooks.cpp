@@ -24,14 +24,18 @@ char* jitcheck1_generate;
 
 void __declspec(naked) JitCheck1Hook() {
 	__asm {
+		// redirect already compiled methods here
 		mov [ebp-0x10], edi
 		je generate
+		// store some shit
 		push ecx
 		push eax
 		push ebx
 		push ebp
 		push esp
+		// null check these
 		mov ebx, [eax+0x13C]
+		// test with oneself is false if zero
 		test ebx, ebx
 		je nomethod
 		test ecx, ecx
@@ -41,23 +45,28 @@ void __declspec(naked) JitCheck1Hook() {
 		push eax
 		call check_if_marked_for_jit
 		test al, al
+		// unstore some shit!
 		pop esp
 		pop ebp
 		pop ebx
 		pop eax
 		pop ecx
 		mov esi, jitcheck1_dont_generate
+		// if not marked for jit, go home
 		je jump
+		// this method was marked for recompilation, recompile
 		generate:
 		mov esi, jitcheck1_generate
 	    jump:
 		jmp esi
 		nomethod:
+		// unstore some shit again!
 		pop esp
 		pop ebp
 		pop ebx
 		pop eax
 	    pop ecx
+		// keep moving, no changes detected
 		mov esi, jitcheck1_dont_generate
 		jmp esi
 	}
