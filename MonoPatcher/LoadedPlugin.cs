@@ -9,7 +9,6 @@ namespace MonoPatcherLib
         public Type Type;
         public object Instance;
         public bool PatchOnInitialize = true;
-        public bool PatchedAll = false;
 
         internal LoadedPlugin(Type type, bool patchOnInitialize)
         {
