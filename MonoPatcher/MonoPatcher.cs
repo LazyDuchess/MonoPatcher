@@ -4,10 +4,8 @@ using Sims3.UI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace MonoPatcherLib
 {
@@ -232,14 +230,9 @@ namespace MonoPatcherLib
             CommandSystem.RegisterCommand("monopatcher_clearcache", "Clears Reflection stuff and executes GC.", (object[] args) =>
             {
                 Simulator.ClearReflectionCache();
-                System.GC.Collect();
+                GC.Collect();
                 return 1;
             });
-        }
-
-        private static void ToNOP()
-        {
-            SimpleMessageDialog.Show("MonoPatcher", $"Version: {Version}\nInitialization Type: {InitializationType}");
         }
     }
 }

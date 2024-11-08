@@ -12,7 +12,7 @@ namespace MonoPatcherLib.Internal
     internal static class Hooking
     {
         public static Dictionary<IntPtr, WeavedMethod> WeavedMethods = new Dictionary<IntPtr, WeavedMethod>();
-        [DllImport("Sims3Common.dll")]
+        [DllImport("MonoPatcher.asi")]
         public static extern void ReplaceMethodIL(IntPtr methodPtr, IntPtr ilBegin, int ilSize);
 
         public class WeavedMethod : IDisposable
