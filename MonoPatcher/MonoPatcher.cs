@@ -96,6 +96,7 @@ namespace MonoPatcherLib
                     }
                 }
             }
+            AlreadyPatchedAssemblies.Add(assembly);
         }
         
         /// <summary>
