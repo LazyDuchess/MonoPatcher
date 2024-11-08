@@ -44,6 +44,7 @@ namespace MonoPatcherLib
         /// All plugins loaded by MonoPatcher.
         /// </summary>
         public static List<LoadedPlugin> Plugins = new List<LoadedPlugin>();
+        private static List<Assembly> AlreadyPatchedAssemblies = new List<Assembly>();
 
         private static void Log(string text)
         {
@@ -67,6 +68,7 @@ namespace MonoPatcherLib
 
         public static void PatchAll(Assembly assembly)
         {
+            if (AlreadyPatchedAssemblies.Contains(assembly)) return;
             var types = assembly.GetTypes();
             foreach(var type in types)
             {
@@ -201,9 +203,10 @@ namespace MonoPatcherLib
                 var types = assembly.GetTypes();
                 foreach(var type in types)
                 {
-                    if (type.GetCustomAttributes(typeof(PluginAttribute), false).Length > 0)
+                    var attrs = type.GetCustomAttributes(typeof(PluginAttribute), false);
+                    if (attrs.Length > 0)
                     {
-                        var plugin = new LoadedPlugin(type);
+                        var plugin = new LoadedPlugin(type, (attrs[0] as PluginAttribute).ApplyPatchesAutomatically);
                         Plugins.Add(plugin);
                     }
                 }

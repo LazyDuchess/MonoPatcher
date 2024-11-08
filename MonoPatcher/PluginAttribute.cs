@@ -10,5 +10,15 @@ namespace MonoPatcherLib
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class PluginAttribute : Attribute
     {
+        public bool ApplyPatchesAutomatically = true;
+        public PluginAttribute()
+        {
+
+        }
+
+        public PluginAttribute(bool applyPatchesAutomatically)
+        {
+            ApplyPatchesAutomatically = applyPatchesAutomatically;
+        }
     }
 }

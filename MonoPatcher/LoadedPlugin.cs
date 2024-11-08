@@ -6,17 +6,22 @@ namespace MonoPatcherLib
 {
     public class LoadedPlugin
     {
-        Type Type;
-        object Instance;
+        public Type Type;
+        public object Instance;
+        public bool PatchOnInitialize = true;
+        public bool PatchedAll = false;
 
-        internal LoadedPlugin(Type type)
+        internal LoadedPlugin(Type type, bool patchOnInitialize)
         {
             Type = type;
+            PatchOnInitialize = patchOnInitialize;
         }
 
         internal void Initialize()
         {
             Instance = Activator.CreateInstance(Type);
+            if (PatchOnInitialize)
+                MonoPatcher.PatchAll(Type.Assembly);
         }
     }
 }
