@@ -58,6 +58,8 @@ namespace MonoPatcherLib
             if (initType == InitializationTypes.None) return;
             World.sOnStartupAppEventHandler += OnStartupApp;
             LoadPlugins();
+            var nop = typeof(MonoPatcher).GetMethod(nameof(ToNOP), BindingFlags.Static | BindingFlags.NonPublic);
+            DoTrampoline(nop);
         }
 
         public static void PatchAll()
@@ -223,6 +225,11 @@ namespace MonoPatcherLib
                 SimpleMessageDialog.Show("MonoPatcher", $"Replaced {ReplacementCount} methods.\n{ReplacementLog}");
                 return 1;
             });
+            CommandSystem.RegisterCommand("monopatcher_trampolinetest", "Tests MonoPatcher unmanaged trampoline", (object[] args) =>
+            {
+                ToNOP();
+                return 1;
+            });
             CommandSystem.RegisterCommand("monopatcher_trampoline", "Shows MonoPatcher unmanaged trampoline address", (object[] args) =>
             {
                 SimpleMessageDialog.Show("MonoPatcher", $"Unmanaged trampoline is {Hooking.GetUnmanagedTrampoline().ToInt32().ToString("X")}");
@@ -231,9 +238,27 @@ namespace MonoPatcherLib
             CommandSystem.RegisterCommand("monopatcher_clearcache", "Clears Reflection stuff and executes GC.", (object[] args) =>
             {
                 Simulator.ClearReflectionCache();
-                System.GC.Collect();
+                GC.Collect();
                 return 1;
             });
+        }
+
+        private static void DoTrampoline(MethodInfo method)
+        {
+            var il = GetIL(method);
+            using (var ms = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(ms))
+                {
+                    writer.Write((byte)0x20);
+                    writer.Write(BitConverter.GetBytes(Hooking.GetUnmanagedTrampoline().ToInt32()));
+                    writer.Write((byte)0x29);
+                    writer.Write(0x11000007);
+                    writer.Write(il);
+                    ms.Flush();
+                    ReplaceIL(method, ms.ToArray());
+                }
+            }
         }
 
         private static void ToNOP()
