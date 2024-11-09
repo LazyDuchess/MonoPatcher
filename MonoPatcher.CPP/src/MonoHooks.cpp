@@ -2,11 +2,31 @@
 #include "mono.h"
 #include "MinHook.h"
 #include "GameAddresses.h"
+#include "scan.h"
 
 std::map<void*, HookedMethod> MonoHooks::HookedMethodMap;
 
-void __stdcall force_jit(bool force) {
+// Force recompilation of all methods run.
+void patch_enable_jit() {
+	const char enableJitPatch1[] = {0x90, 0x90};
+	WriteToMemory((DWORD)GameAddresses::Addresses["jit1"], (void*)enableJitPatch1, 2);
+	const char enableJitPatch2[] = { 0xEB };
+	WriteToMemory((DWORD)GameAddresses::Addresses["jit2"], (void*)enableJitPatch2, 1);
+}
 
+// Undo above.
+void patch_disable_jit() {
+	const char disableJitPatch1[] = { 0x75, 0x26 };
+	WriteToMemory((DWORD)GameAddresses::Addresses["jit1"], (void*)disableJitPatch1, 2);
+	const char disableJitPatch2[] = { 0x74 };
+	WriteToMemory((DWORD)GameAddresses::Addresses["jit2"], (void*)disableJitPatch2, 1);
+}
+
+void __stdcall force_jit(bool force) {
+	if (force)
+		patch_enable_jit();
+	else
+		patch_disable_jit();
 }
 
 void __stdcall replace_il_for_mono_method(void* method, char* ilbegin, int ilsize) {
@@ -28,6 +48,7 @@ int __cdecl DetourGenerateCode(MonoMethod* method, void* unk1, void* unk2, void*
 
 void MonoHooks::InitializeScriptHost() {
 	mono_add_internal_call("MonoPatcherLib.Internal.Hooking::ReplaceMethodIL", replace_il_for_mono_method);
+	mono_add_internal_call("MonoPatcherLib.Internal.Hooking::ForceJIT", force_jit);
 }
 
 bool MonoHooks::Initialize() {
