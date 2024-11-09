@@ -44,6 +44,7 @@ namespace MonoPatcherLib
         /// All plugins loaded by MonoPatcher.
         /// </summary>
         public static List<LoadedPlugin> Plugins = new List<LoadedPlugin>();
+
         private static List<Assembly> AlreadyPatchedAssemblies = new List<Assembly>();
 
         private static void Log(string text)

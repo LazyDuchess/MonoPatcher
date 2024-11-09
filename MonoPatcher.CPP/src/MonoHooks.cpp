@@ -5,6 +5,10 @@
 
 std::map<void*, HookedMethod> MonoHooks::HookedMethodMap;
 
+void __stdcall force_jit(bool force) {
+
+}
+
 void __stdcall replace_il_for_mono_method(void* method, char* ilbegin, int ilsize) {
 	MonoHooks::HookedMethodMap[method] = HookedMethod(ilbegin, ilsize);
 }

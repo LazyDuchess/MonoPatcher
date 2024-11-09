@@ -14,7 +14,8 @@ namespace MonoPatcherLib.Internal
         public static Dictionary<IntPtr, WeavedMethod> WeavedMethods = new Dictionary<IntPtr, WeavedMethod>();
         [DllImport("MonoPatcher.asi")]
         public static extern void ReplaceMethodIL(IntPtr methodPtr, IntPtr ilBegin, int ilSize);
-
+        [DllImport("MonoPatcher.asi")]
+        public static extern void ForceJIT(bool force);
         public class WeavedMethod : IDisposable
         {
             public IntPtr Allocation;
