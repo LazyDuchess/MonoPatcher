@@ -6,6 +6,12 @@
 
 std::map<void*, HookedMethod> MonoHooks::HookedMethodMap;
 
+// Mono keeps spamming "ret: more values on stack 1" in vanilla TS3. This clogs up the console and slows the game down a bit as well.
+void patch_mono_spam() {
+	const char monoSpamPatch[] = {0x90, 0xE9};
+	WriteToMemory((DWORD)GameAddresses::Addresses["ret_more_values_on_stack"], (void*)monoSpamPatch, 2);
+}
+
 // Force recompilation of all methods run.
 void patch_enable_jit() {
 	const char enableJitPatch1[] = {0x90, 0x90};
@@ -62,6 +68,7 @@ bool MonoHooks::Initialize() {
 	{
 		return false;
 	}
+	patch_mono_spam();
 	return true;
 }
 

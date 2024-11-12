@@ -34,6 +34,10 @@ char FirstJITCheckLookupMask[] = "x?xxxxxxxxx????xxxxxxxxxxxxxxxxx";
 char SecondJITCheckLookup[] = { 0x74, 0x4C, 0x68, 0x24, 0xF1, 0x20, 0x01, 0xFF, 0x15, 0x70, 0xF3, 0xFD, 0x00, 0x8B, 0x4D, 0xF4, 0x51, 0xE8, 0x4E, 0x9F, 0xF0, 0xFF, 0x6A, 0x00, 0x6A, 0x00, 0x57, 0xE8, 0xF4, 0x02, 0x04, 0x00 };
 char SecondJITCheckLookupMask[] = "x?x????xx????xxxxx????xxxxxx????";
 
+// Location: 0x004ECC38 (1.69)
+char RetMoreValuesOnStackLookup[] = {0x0F, 0x86, 0xA9, 0xB1, 0xFF, 0xFF, 0x2B, 0xF0, 0xC1, 0xFE, 0x03, 0x56, 0x68, 0x58, 0x5C, 0xFE, 0x00, 0xE8, 0x32, 0xD9, 0xFE, 0xFF, 0x83, 0xC4, 0x08, 0xE9, 0x91, 0xB1, 0xFF, 0xFF, 0x8B, 0x45, 0xF8, 0x8B, 0x40, 0x18};
+char RetMoreValuesOnStackLookupMask[] = "xx????xxxxxxx????x????xxxx????xxxxxx";
+
 bool GameAddresses::RegisterAddress(char* name, char* address) {
 	if (address != nullptr) {
 		printf("GameAddresses: Registering %s pointing to %p\n", name, address);
@@ -62,5 +66,6 @@ bool GameAddresses::Initialize() {
 	if (!RegisterAddress("generate_code", ScanInternal(MonoGenerateCodeLookup, MonoGenerateCodeLookupMask, modBase, size))) return false;
 	if (!RegisterAddress("jit1", ScanInternal(FirstJITCheckLookup, FirstJITCheckLookupMask, modBase, size))) return false;
 	if (!RegisterAddress("jit2", ScanInternal(SecondJITCheckLookup, SecondJITCheckLookupMask, modBase, size))) return false;
+	if (!RegisterAddress("ret_more_values_on_stack", ScanInternal(RetMoreValuesOnStackLookup, RetMoreValuesOnStackLookupMask, modBase, size))) return false;
 	return true;
 }
