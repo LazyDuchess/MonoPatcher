@@ -12,4 +12,4 @@ using Sims3.SimIFace;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("0.2.1")]
+[assembly: AssemblyVersion("0.2.0")]
