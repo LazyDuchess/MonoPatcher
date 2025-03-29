@@ -61,9 +61,12 @@ void MonoHooks::InitializeScriptHost() {
 	// Add plugin-defined internal calls.
 	printf("\nAdding custom ICalls.\n");
 	std::filesystem::path path(L"MonoPatcher/plugins/");
-	std::string ext(".dll");
 	std::error_code error;
 	for (auto& p : std::filesystem::recursive_directory_iterator(path, error)) {
+		auto extension = p.path().extension();
+		auto& e = extension.native();
+		if (e.length() != 4) continue;
+		if (((e[1] != 'd') & (e[1] != 'D')) | ((e[2] != 'l') & (e[2] != 'L')) | ((e[3] != 'l') & (e[3] != 'L'))) continue;
 		HMODULE lib = LoadLibraryW(p.path().c_str());
 		if (!lib) continue;
 		FARPROC libEntry = GetProcAddress(lib, "ICallSetup");
