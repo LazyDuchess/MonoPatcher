@@ -1,7 +1,6 @@
-#include <filesystem>
-
 #include "MonoHooks.h"
 #include "GameAddresses.h"
+#include "Core.h"
 #include "MinHook.h"
 #include "mono.h"
 #include "scan.h"
@@ -60,21 +59,12 @@ void MonoHooks::InitializeScriptHost() {
 
 	// Add plugin-defined internal calls.
 	printf("\nAdding custom ICalls.\n");
-	std::filesystem::path path(L"MonoPatcher/plugins/");
-	std::error_code error;
-	for (auto& p : std::filesystem::recursive_directory_iterator(path, error)) {
-		auto extension = p.path().extension();
-		auto& e = extension.native();
-		if (e.length() != 4) continue;
-		if (((e[1] != 'd') & (e[1] != 'D')) | ((e[2] != 'l') & (e[2] != 'L')) | ((e[3] != 'l') & (e[3] != 'L'))) continue;
-		HMODULE lib = LoadLibraryW(p.path().c_str());
-		if (!lib) continue;
-		FARPROC libEntry = GetProcAddress(lib, "ICallSetup");
+	for (HMODULE plugin : Core::GetInstance()->loadedPlugins) {
+		FARPROC libEntry = GetProcAddress(plugin, "ICallSetup");
 		if (!libEntry) continue;
 		typedef void (*ICallSetupPtr)(void (*mono_add_internal_call)(const char *name, const void *method));
 		ICallSetupPtr ICallSetup = (ICallSetupPtr)libEntry;
 		ICallSetup(mono_add_internal_call);
-		printf("Loaded Plugin: %ls\n", p.path().c_str());
 	}
 }
 
