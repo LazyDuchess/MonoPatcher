@@ -22,6 +22,11 @@ int __fastcall DetourInitializeScriptHost(void* me, void* _) {
 	// not calling `LoadLibrary` within the context of our DLLMain.
 	// (See: https://learn.microsoft.com/windows/win32/dlls/dynamic-link-library-best-practices)
 	Core::GetInstance()->LoadPlugins();
+	// We initialize each plugin after all the plugins have loaded so that
+	// plugins can detect the presence of each other, and also so that they can
+	// initialize their state outside of their DLL entrypoints.
+	Core::GetInstance()->InitializePlugins();
+
 	int result = fpInitializeScriptHost(me);
 	MonoHooks::InitializeScriptHost();
 	ScriptHost::GetInstance()->CreateMonoClass("MonoPatcherLib", "DLLEntryPoint");
@@ -52,6 +57,17 @@ void Core::LoadPlugins() {
 		if (!lib) continue;
 		loadedPlugins.emplace_back(lib);
 		printf("Loaded Plugin: %ls\n", p.path().c_str());
+	}
+}
+
+void Core::InitializePlugins() {
+	printf("\nInitializing plugins.\n");
+	for (HMODULE plugin : loadedPlugins) {
+		FARPROC init = GetProcAddress(plugin, "InitMonoPatcherPlugin");
+		if (!init) continue;
+		typedef void (*InitMonoPatcherPlugin)(PluginInitContext* context);
+		PluginInitContext context{};
+		reinterpret_cast<InitMonoPatcherPlugin>(init)(&context);
 	}
 }
 
