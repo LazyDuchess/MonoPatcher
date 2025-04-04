@@ -1,5 +1,5 @@
 #include "MonoHooks.h"
-#include "GameAddresses.h"
+#include "Addresses.h"
 #include "Core.h"
 #include "MinHook.h"
 #include "mono.h"
@@ -10,23 +10,23 @@ std::map<void*, HookedMethod> MonoHooks::HookedMethodMap;
 // Mono keeps spamming "ret: more values on stack 1" in vanilla TS3. This clogs up the console and slows the game down a bit as well.
 void patch_mono_spam() {
 	const char monoSpamPatch[] = {0x90, 0xE9};
-	WriteToMemory((DWORD)GameAddresses::Addresses["ret_more_values_on_stack"], (void*)monoSpamPatch, 2);
+	WriteToMemory((DWORD)Addresses::RetMoreValuesOnStack, (void*)monoSpamPatch, 2);
 }
 
 // Force recompilation of all methods run.
 void patch_enable_jit() {
 	const char enableJitPatch1[] = {0x90, 0x90};
-	WriteToMemory((DWORD)GameAddresses::Addresses["jit1"], (void*)enableJitPatch1, 2);
+	WriteToMemory((DWORD)Addresses::JIT1, (void*)enableJitPatch1, 2);
 	const char enableJitPatch2[] = { 0xEB };
-	WriteToMemory((DWORD)GameAddresses::Addresses["jit2"], (void*)enableJitPatch2, 1);
+	WriteToMemory((DWORD)Addresses::JIT2, (void*)enableJitPatch2, 1);
 }
 
 // Undo above.
 void patch_disable_jit() {
 	const char disableJitPatch1[] = { 0x75, 0x26 };
-	WriteToMemory((DWORD)GameAddresses::Addresses["jit1"], (void*)disableJitPatch1, 2);
+	WriteToMemory((DWORD)Addresses::JIT1, (void*)disableJitPatch1, 2);
 	const char disableJitPatch2[] = { 0x74 };
-	WriteToMemory((DWORD)GameAddresses::Addresses["jit2"], (void*)disableJitPatch2, 1);
+	WriteToMemory((DWORD)Addresses::JIT2, (void*)disableJitPatch2, 1);
 }
 
 void __stdcall force_jit(bool force) {
@@ -69,13 +69,13 @@ void MonoHooks::InitializeScriptHost() {
 }
 
 bool MonoHooks::Initialize() {
-	if (MH_CreateHook((void*)GameAddresses::Addresses["generate_code"], &DetourGenerateCode,
+	if (MH_CreateHook((void*)Addresses::GenerateCode, &DetourGenerateCode,
 		reinterpret_cast<LPVOID*>(&fpGenerateCode)) != MH_OK)
 	{
 		return false;
 	}
 
-	if (MH_EnableHook((void*)GameAddresses::Addresses["generate_code"]) != MH_OK)
+	if (MH_EnableHook((void*)Addresses::GenerateCode) != MH_OK)
 	{
 		return false;
 	}
